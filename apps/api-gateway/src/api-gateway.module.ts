@@ -16,7 +16,31 @@ import { ApiGatewayService } from './api-gateway.service';
           transport: Transport.TCP,
           options: {
             host: '127.0.0.1',
-            port: Number(cfg.get('AUTH_SERVICE_TCP_PORT') || 4502),
+            port: Number(cfg.get('AUTH_SERVICE_TCP_PORT') || 4504),
+          },
+        }),
+      },
+       {
+        name: 'TENANT_SERVICE',
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (cfg: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: '127.0.0.1',
+            port: Number(cfg.get('TENANT_SERVICE_TCP_PORT') || 4504),
+          },
+        }),
+      },
+            {
+        name: 'USER_SERVICE',
+        imports: [ConfigModule],
+        inject: [ConfigService],
+        useFactory: (cfg: ConfigService) => ({
+          transport: Transport.TCP,
+          options: {
+            host: '127.0.0.1',
+            port: Number(cfg.get('USER_SERVICE_TCP_PORT') || 4504),
           },
         }),
       },

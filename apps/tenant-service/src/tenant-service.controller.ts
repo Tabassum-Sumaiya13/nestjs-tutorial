@@ -1,10 +1,19 @@
 import { Controller, Get } from '@nestjs/common';
-import { TenantServiceService } from './tenant-service.service';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @Controller()
 export class TenantServiceController {
-  @Get()
-  getHello(): any {
-    return { message: '🚀 Welcome to Tenant Service!(TCP)' };
-  } 
+  @Get('health')
+  health() {
+    return { ok: true, service: 'tenant-service', mode: 'HTTP' };
+  }
+
+  @MessagePattern({ cmd: 'get_tenant' })
+  getAuth(@Payload() data: any) {
+    return {
+      message: '🔑 Tenant Service TCP response',
+      receivedData: data ?? null,
+      ts: new Date().toISOString(),
+    };
+  }
 }
