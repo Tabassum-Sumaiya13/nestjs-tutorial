@@ -1,11 +1,19 @@
-
-import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { Controller, Get } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 
 @Controller()
 export class AuthServiceController {
-  @MessagePattern('getWelcome')  
-  getWelcome(): any {
-    return { message: '🔑 Welcome to Auth Service (TCP)!' };
+  @Get('health')
+  health() {
+    return { ok: true, service: 'auth-service', mode: 'HTTP' };
+  }
+
+  @MessagePattern({ cmd: 'get_auth' })
+  getAuth(@Payload() data: any) {
+    return {
+      message: '🔑 Auth Service TCP response',
+      receivedData: data ?? null,
+      ts: new Date().toISOString(),
+    };
   }
 }

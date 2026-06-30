@@ -2,10 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
 import * as path from 'node:path';
-import { AuthServiceModule } from './auth-service.module';
+import { AuthServiceModule } from '../../auth-service/src/auth-service.module';
 
 // Dynamically infer service name from directory name
-const serviceName = path.basename(path.dirname(__filename)) || 'tenant-service';
+const serviceName = path.basename(path.dirname(__filename)) || 'service';
 
 async function bootstrap() {
   const ENV_PREFIX = serviceName.toUpperCase().replace(/-/g, '_');
@@ -28,13 +28,9 @@ async function bootstrap() {
 
   const logger = new Logger(serviceName);
   logger.log(
-    `
-🚀  ${serviceName} ready!
-` +
-      `    REST: http://localhost:${httpPort}
-` +
-      `    TCP : tcp://localhost:${tcpPort}
-` +
+    `\n🚀  ${serviceName} ready!\n` +
+      `    REST: http://localhost:${httpPort}\n` +
+      `    TCP : tcp://localhost:${tcpPort}\n` +
       `    ENV : ${process.env.NODE_ENV}`,
   );
 }
