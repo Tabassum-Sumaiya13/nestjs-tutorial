@@ -1,23 +1,24 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { Logger } from '@nestjs/common';
-import * as path from 'node:path';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { TenantServiceModule } from './tenant-service.module';
 
-// Dynamically infer service name from directory name
-const serviceName = path.basename(path.dirname(__filename)) || 'tenant-service';
-
 async function bootstrap() {
+  const serviceName = 'tenant-service';
   const ENV_PREFIX = serviceName.toUpperCase().replace(/-/g, '_');
-  const httpPort = Number(process.env[`${ENV_PREFIX}_HTTP_PORT`]) || 3000;
-  const tcpPort = Number(process.env[`${ENV_PREFIX}_TCP_PORT`]) || 4000;
+  const httpPort = Number(process.env[`${ENV_PREFIX}_HTTP_PORT`]) || 3503;
+  const tcpPort = Number(process.env[`${ENV_PREFIX}_TCP_PORT`]) || 4503;
 
-  console.log(`${ENV_PREFIX}_HTTP_PORT`);
-
-  // Create HTTP app
   const app = await NestFactory.create(TenantServiceModule);
 
-  // Attach TCP microservice
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
     options: { host: '0.0.0.0', port: tcpPort },
@@ -28,14 +29,9 @@ async function bootstrap() {
 
   const logger = new Logger(serviceName);
   logger.log(
-    `
-🚀  ${serviceName} ready!
-` +
-      `    REST: http://localhost:${httpPort}
-` +
-      `    TCP : tcp://localhost:${tcpPort}
-` +
-      `    ENV : ${process.env.NODE_ENV}`,
+    `\n🚀  ${serviceName} ready!\n` +
+      `    REST: http://localhost:${httpPort}\n` +
+      `    TCP : tcp://localhost:${tcpPort}\n`,
   );
 }
 bootstrap();
