@@ -18,22 +18,22 @@ export class Tenant {
     type: String,
     default: uuidv4,
   })
-  _id: string; // UUID primary key
+  _id!: string; // UUID primary key
 
   @Prop({ required: true, unique: true, trim: true, lowercase: true })
-  name: string;
+  name!: string;
 
   @Prop({ required: true, trim: true })
-  displayName: string;
+  displayName!: string;
 
   @Prop({ required: true, trim: true })
-  contactEmail: string;
+  contactEmail!: string;
 
   @Prop({ type: String, enum: TenantStatus, default: TenantStatus.PENDING })
-  status: TenantStatus;
+  status!: TenantStatus;
 
   @Prop({ type: Boolean, default: false })
-  deleted: boolean;
+  deleted!: boolean;
 }
 
 export const TenantSchema = SchemaFactory.createForClass(Tenant);

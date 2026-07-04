@@ -12,14 +12,14 @@ export class CreateTenantDto {
   @IsString()
   @MinLength(3)
   @Matches(/^[a-z0-9-]+$/)
-  name: string;
+  name!: string;
 
   @IsString()
   @MinLength(3)
-  displayName: string;
+  displayName!: string;
 
   @IsEmail()
-  contactEmail: string;
+  contactEmail!: string;
 
   @IsOptional()
   @IsEnum(TenantStatus)

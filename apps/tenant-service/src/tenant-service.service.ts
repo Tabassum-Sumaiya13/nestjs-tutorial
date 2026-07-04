@@ -28,15 +28,67 @@ export class TenantServiceService {
     }
   }
 
-  async findAll(status?: TenantStatus): Promise<Tenant[]> {
-    const query: any = { deleted: false }; // Use 'any' type
+  async findAll(
+    status?: TenantStatus,
+    page = 1,
+    pageSize = 10,
+  ): Promise<{ data: Tenant[]; total: number; meta: any }> {
+    const query: any = { deleted: false };
     if (status) query.status = status;
-    return this.tenantModel.find(query).sort({ createdAt: -1 }).lean().exec();
-  }
 
+    const total = await this.tenantModel.countDocuments(query);
+
+    // Negative page means "all data"
+    if (page < 0) {
+      const data = await this.tenantModel
+        .find(query)
+        .sort({ createdAt: -1 })
+        .lean()
+        .exec();
+      return {
+        data,
+        total,
+        meta: {
+          total,
+          page: -1,
+          pageSize: total,
+          totalPages: 1,
+        },
+      };
+    }
+
+    const skip = (page - 1) * pageSize;
+    const data = await this.tenantModel
+      .find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(pageSize)
+      .lean()
+      .exec();
+
+    return {
+      data,
+      total,
+      meta: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize) || 1,
+      },
+    };
+  }
   async findById(id: string): Promise<Tenant> {
     const doc = await this.tenantModel
-      .findOne({ _id: id, deleted: false })
+      .findOne({ _id: id as any, deleted: false } as any)
+      .lean()
+      .exec();
+    if (!doc) throw new NotFoundException('Tenant not found');
+    return doc;
+  }
+
+  async findByName(name: string): Promise<Tenant> {
+    const doc = await this.tenantModel
+      .findOne({ name, deleted: false })
       .lean()
       .exec();
     if (!doc) throw new NotFoundException('Tenant not found');
@@ -46,7 +98,7 @@ export class TenantServiceService {
   async update(id: string, dto: UpdateTenantDto): Promise<Tenant> {
     const updated = await this.tenantModel
       .findOneAndUpdate(
-        { _id: id, deleted: false },
+        { _id: id as any, deleted: false } as any,
         { $set: dto },
         { new: true, runValidators: true },
       )
@@ -59,7 +111,7 @@ export class TenantServiceService {
   async changeStatus(id: string, status: TenantStatus): Promise<Tenant> {
     const updated = await this.tenantModel
       .findOneAndUpdate(
-        { _id: id, deleted: false },
+        { _id: id as any, deleted: false } as any,
         { $set: { status } },
         { new: true },
       )
@@ -71,10 +123,9 @@ export class TenantServiceService {
 
   async softDelete(id: string): Promise<{ deleted: boolean }> {
     const res = await this.tenantModel
-      .findOneAndUpdate(
-        { _id: id, deleted: false },
-        { $set: { deleted: true, status: TenantStatus.INACTIVE } },
-      )
+      .findOneAndUpdate({ _id: id as any, deleted: false } as any, {
+        $set: { deleted: true, status: TenantStatus.INACTIVE },
+      })
       .lean()
       .exec();
     if (!res) throw new NotFoundException('Tenant not found');

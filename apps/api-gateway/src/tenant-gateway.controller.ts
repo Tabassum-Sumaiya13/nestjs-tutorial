@@ -32,11 +32,22 @@ export class TenantGatewayController {
   }
 
   @Get()
-  async findAll(@Query('status') status?: TenantStatus) {
+  async findAll(
+    @Query('status') status?: TenantStatus,
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+  ) {
     const result = await lastValueFrom(
-      this.tenantClient.send({ cmd: 'tenant.findAll' }, status ?? ''),
+      this.tenantClient.send(
+        { cmd: 'tenant.findAll' },
+        {
+          status: status ?? null,
+          page: page !== undefined ? Number(page) : 1,
+          pageSize: pageSize !== undefined ? Number(pageSize) : 10,
+        },
+      ),
     );
-    return apiResponse('Tenant list via Gateway', result.data);
+    return apiResponse('Tenant list via Gateway', result.data, result.meta);
   }
 
   @Get(':id')
