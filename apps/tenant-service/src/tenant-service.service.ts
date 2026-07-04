@@ -4,7 +4,8 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, FilterQuery } from 'mongoose';
+import { Model } from 'mongoose';
+
 import { Tenant, TenantDocument, TenantStatus } from './schemas/tenant.schema';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
@@ -28,7 +29,7 @@ export class TenantServiceService {
   }
 
   async findAll(status?: TenantStatus): Promise<Tenant[]> {
-    const query: FilterQuery<Tenant> = { deleted: false };
+    const query: any = { deleted: false }; // Use 'any' type
     if (status) query.status = status;
     return this.tenantModel.find(query).sort({ createdAt: -1 }).lean().exec();
   }

@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { TenantServiceService } from './tenant-service.service';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
