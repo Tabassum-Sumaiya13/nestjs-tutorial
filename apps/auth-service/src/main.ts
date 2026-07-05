@@ -1,16 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { Logger } from '@nestjs/common';
-import * as path from 'node:path';
 import { AuthServiceModule } from '../../auth-service/src/auth-service.module';
 
-// Dynamically infer service name from directory name
-const serviceName = path.basename(path.dirname(__filename)) || 'service';
+const serviceName = 'auth-service';
 
 async function bootstrap() {
   const ENV_PREFIX = serviceName.toUpperCase().replace(/-/g, '_');
-  const httpPort = Number(process.env[`${ENV_PREFIX}_HTTP_PORT`]) || 3000;
-  const tcpPort = Number(process.env[`${ENV_PREFIX}_TCP_PORT`]) || 4000;
+  const httpPort = Number(process.env[`${ENV_PREFIX}_HTTP_PORT`]) || 3502;
+  const tcpPort = Number(process.env[`${ENV_PREFIX}_TCP_PORT`]) || 4502;
 
   console.log(`${ENV_PREFIX}_HTTP_PORT`);
 
