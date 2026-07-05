@@ -15,8 +15,8 @@ describe('TenantServiceController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(tenantServiceController.getHello()).toBe('Hello World!');
+    it('should return health status', () => {
+      expect(tenantServiceController.health()).toEqual({ ok: true, service: 'tenant-service', mode: 'HTTP' });
     });
   });
 });

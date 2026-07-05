@@ -15,8 +15,8 @@ describe('ApiGatewayController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(apiGatewayController.getHello()).toBe('Hello World!');
+    it('should return health status', () => {
+      expect(apiGatewayController.health()).toEqual({ ok: true, service: 'api-gateway', mode: 'HTTP' });
     });
   });
 });

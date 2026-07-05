@@ -2,6 +2,8 @@ import { Body, Controller, Get, Post, Req } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthServiceService } from './auth-service.service';
 import { SignupDto } from './dto/signup.dto';
+import { LoginDto } from './dto/login.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 
 @Controller('auth')
 export class AuthServiceController {
@@ -22,12 +24,55 @@ export class AuthServiceController {
   @MessagePattern({ cmd: 'auth.signup' })
   async signupTcp(@Payload() payload: SignupDto & { tenantConnection?: any }) {
     const result = await this.service.signup(
+      { tenantConnection: payload.tenantConnection } as any,
+      payload,
+    );
+    return result;
+  }
+
+  // ───────────────────────────────
+  // HTTP Endpoint: Login (send OTP)
+  // ───────────────────────────────
+  @Post('login')
+  async loginHttp(@Req() req: any, @Body() dto: LoginDto) {
+    const result = await this.service.login(req, dto);
+    return result;
+  }
+
+  // ───────────────────────────────
+  // HTTP Endpoint: Login → Verify OTP
+  // ───────────────────────────────
+  @Post('login/verify')
+  async verifyOtpHttp(@Req() req: any, @Body() dto: VerifyOtpDto) {
+    const result = await this.service.verifyOtp(req, dto);
+    return result;
+  }
+
+  // ───────────────────────────────
+  // TCP Endpoint: Login (send OTP)
+  // ───────────────────────────────
+  @MessagePattern({ cmd: 'auth.login' })
+  async loginTcp(@Payload() payload: LoginDto & { tenantConnection?: any }) {
+    const result = await this.service.login(
       { tenantConnection: payload.tenantConnection },
       payload,
     );
     return result;
   }
 
+  // ───────────────────────────────
+  // TCP Endpoint: Login → Verify OTP
+  // ───────────────────────────────
+  @MessagePattern({ cmd: 'auth.verifyOtp' })
+  async verifyOtpTcp(
+    @Payload() payload: VerifyOtpDto & { tenantConnection?: any },
+  ) {
+    const result = await this.service.verifyOtp(
+      { tenantConnection: payload.tenantConnection },
+      payload,
+    );
+    return result;
+  }
   // ───────────────────────────────
   // HTTP Endpoint: Health check
   // ───────────────────────────────

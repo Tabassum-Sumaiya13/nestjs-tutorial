@@ -15,8 +15,8 @@ describe('UserServiceController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(userServiceController.getHello()).toBe('Hello World!');
+    it('should return health status', () => {
+      expect(userServiceController.health()).toEqual({ ok: true, service: 'user-service', mode: 'HTTP' });
     });
   });
 });

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-nodemailer, { Transporter } from 'nodemailer';
+import nodemailer, { Transporter } from 'nodemailer';
 import handlebars from 'handlebars';
 
 /**
@@ -57,7 +57,9 @@ export class EmailLibService {
       this.logger.log(`📧 Email sent to ${to}: ${info.messageId}`);
       return info;
     } catch (err) {
-      this.logger.error(`❌ Failed to send email to ${to}`, err.stack);
+      const errorMessage =
+        err instanceof Error ? (err.stack ?? err.message) : String(err);
+      this.logger.error(`❌ Failed to send email to ${to}`, errorMessage);
       throw err;
     }
   }

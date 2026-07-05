@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { TenantServiceModule } from './../src/tenant-service.module';
 
 describe('TenantServiceController (e2e)', () => {
@@ -15,10 +15,10 @@ describe('TenantServiceController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('/health (GET)', () => {
     return request(app.getHttpServer())
-      .get('/')
+      .get('/health')
       .expect(200)
-      .expect('Hello World!');
+      .expect({ ok: true, service: 'tenant-service', mode: 'HTTP' });
   });
 });

@@ -7,11 +7,22 @@ import { TenantMiddleware } from '@app/database-lib/tenant.middleware';
 import { AuthServiceService } from './auth-service.service';
 import { EmailLibService } from '@app/email-lib';
 import { AuthServiceController } from './auth-service.controller';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     RedisLibModule,
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (cfg: ConfigService) => {
+        const expiresIn = cfg.get<string>('JWT_EXPIRES_IN', '15m');
+        return {
+          secret: cfg.get<string>('JWT_SECRET'),
+          signOptions: { expiresIn: expiresIn as any },
+        };
+      },
+    }),
     ClientsModule.registerAsync([
       {
         name: 'TENANT_SERVICE',

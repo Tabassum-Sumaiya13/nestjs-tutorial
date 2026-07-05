@@ -37,8 +37,12 @@ export class DatabaseLibService {
     }
 
     // 🔗 Build tenant-specific DB URI
-    const baseUri = (this.config.get<string>('MONGO_URI', 'mongodb://localhost:27017') ?? 'mongodb://localhost:27017').replace(/\/$/, '');
-    const prefix = this.config.get<string>('MONGO_DB_PREFIX', 'aerostitch') ?? 'aerostitch';
+    const baseUri = (
+      this.config.get<string>('MONGO_URI', 'mongodb://localhost:27017') ??
+      'mongodb://localhost:27017'
+    ).replace(/\/$/, '');
+    const prefix =
+      this.config.get<string>('MONGO_DB_PREFIX', 'aerostitch') ?? 'aerostitch';
     const dbName = `${prefix}_${tenantName}`;
     const uri = `${baseUri}/${dbName}`;
 
@@ -55,21 +59,20 @@ export class DatabaseLibService {
       this.connections.set(tenantName, conn);
 
       // Observability logs
-      conn.on('connected',
-        () =>
-          this.logger.log(`✅ Tenant DB connected: ${tenantName}`),
+      conn.on('connected', () =>
+        this.logger.log(`✅ Tenant DB connected: ${tenantName}`),
       );
       conn.on('error', (err) =>
         this.logger.error(`❌ Tenant DB error (${tenantName}): ${err.message}`),
       );
-      conn.on('disconnected',
-        () =>
-          this.logger.warn(`⚠️ Tenant DB disconnected: ${tenantName}`),
+      conn.on('disconnected', () =>
+        this.logger.warn(`⚠️ Tenant DB disconnected: ${tenantName}`),
       );
 
       return conn;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.stack ?? err.message : String(err);
+      const errorMessage =
+        err instanceof Error ? (err.stack ?? err.message) : String(err);
       this.logger.error(
         `Failed to connect DB (tenant=${tenantName})`,
         errorMessage,

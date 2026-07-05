@@ -15,8 +15,8 @@ describe('AuthServiceController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(authServiceController.getHello()).toBe('Hello World!');
+    it('should return health status', () => {
+      expect(authServiceController.health()).toEqual({ ok: true, service: 'auth-service', mode: 'HTTP' });
     });
   });
 });

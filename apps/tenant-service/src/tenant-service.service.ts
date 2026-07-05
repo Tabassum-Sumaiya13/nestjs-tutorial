@@ -151,10 +151,9 @@ export class TenantServiceService {
 
   async softDelete(id: string): Promise<{ deleted: boolean }> {
     const res = await this.tenantModel
-      .findOneAndUpdate(
-        { _id: id as any, deleted: false } as any,
-        { $set: { deleted: true, status: TenantStatus.INACTIVE } },
-      )
+      .findOneAndUpdate({ _id: id as any, deleted: false } as any, {
+        $set: { deleted: true, status: TenantStatus.INACTIVE },
+      })
       .lean()
       .exec();
     if (!res) throw new NotFoundException('Tenant not found');
