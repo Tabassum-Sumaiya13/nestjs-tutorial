@@ -23,19 +23,17 @@ import { JwtModule } from '@nestjs/jwt';
         };
       },
     }),
-    ClientsModule.registerAsync([
-      {
-        name: 'TENANT_SERVICE',
-        inject: [ConfigService],
-        useFactory: (cfg: ConfigService) => ({
-          transport: Transport.TCP,
-          options: {
-            host: '0.0.0.0',
-            port: cfg.get<number>('TENANT_SERVICE_TCP_PORT', 4503),
-          },
-        }),
-      },
-    ]),
+    ClientsModule.registerAsync({
+      name: 'TENANT_SERVICE',
+      inject: [ConfigService],
+      useFactory: (cfg: ConfigService) => ({
+        transport: Transport.TCP,
+        options: {
+          host: '0.0.0.0',
+          port: cfg.get<number>('TENANT_SERVICE_TCP_PORT', 4503),
+        },
+      }),
+    }),
   ],
   controllers: [AuthServiceController],
   providers: [AuthServiceService, DatabaseLibService, EmailLibService],

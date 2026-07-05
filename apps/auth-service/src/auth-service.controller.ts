@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+// auth-service.controller.ts
+import { Body, Controller, Post, Req } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
+import { apiResponse } from '@app/common-lib';
 import { AuthServiceService } from './auth-service.service';
-import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { SignupDto } from './dto/signup.dto'; // Make sure to import this
 
 @Controller('auth')
 export class AuthServiceController {
@@ -15,18 +17,6 @@ export class AuthServiceController {
   @Post('signup')
   async signupHttp(@Req() req: any, @Body() dto: SignupDto) {
     const result = await this.service.signup(req, dto);
-    return result;
-  }
-
-  // ───────────────────────────────
-  // TCP Endpoint: Signup
-  // ───────────────────────────────
-  @MessagePattern({ cmd: 'auth.signup' })
-  async signupTcp(@Payload() payload: SignupDto & { tenantConnection?: any }) {
-    const result = await this.service.signup(
-      { tenantConnection: payload.tenantConnection } as any,
-      payload,
-    );
     return result;
   }
 
@@ -45,6 +35,18 @@ export class AuthServiceController {
   @Post('login/verify')
   async verifyOtpHttp(@Req() req: any, @Body() dto: VerifyOtpDto) {
     const result = await this.service.verifyOtp(req, dto);
+    return result;
+  }
+
+  // ───────────────────────────────
+  // TCP Endpoint: Signup
+  // ───────────────────────────────
+  @MessagePattern({ cmd: 'auth.signup' })
+  async signupTcp(@Payload() payload: SignupDto & { tenantConnection?: any }) {
+    const result = await this.service.signup(
+      { tenantConnection: payload.tenantConnection },
+      payload,
+    );
     return result;
   }
 
@@ -72,12 +74,5 @@ export class AuthServiceController {
       payload,
     );
     return result;
-  }
-  // ───────────────────────────────
-  // HTTP Endpoint: Health check
-  // ───────────────────────────────
-  @Get('health')
-  health() {
-    return { ok: true, service: 'auth-service', mode: 'HTTP' };
   }
 }

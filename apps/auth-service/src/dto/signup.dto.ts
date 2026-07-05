@@ -2,18 +2,18 @@ import { IsEmail, IsString, MinLength } from 'class-validator';
 
 export class SignupDto {
   @IsString()
-  name: string;
+    name!: string;
 
   @IsString()
-  username: string;
+    username!: string;
 
   @IsEmail()
-  email: string;
+    email!: string;
 
   @IsString()
-  mobile: string;
+    mobile!: string;
 
   @IsString()
-  @MinLength(6)
-  password: string;
+    @MinLength( 6 )
+    password!: string;
 }

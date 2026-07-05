@@ -1,27 +1,29 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Schema } from 'mongoose';
 
-export type UserDocument = User & Document;
+export const SessionSchema = new Schema(
+  {
+    sessionId: { type: String, required: true },
+    deviceName: { type: String },
+    ip: { type: String },
+    ua: { type: String },
+    refreshHash: { type: String },
+    createdAt: { type: Date, default: Date.now },
+    lastSeen: { type: Date, default: Date.now },
+    revokedAt: { type: Date },
+  },
+  { _id: false },
+);
 
-@Schema({ timestamps: true, versionKey: false })
-export class User {
-  @Prop({ required: true, trim: true })
-  name!: string;
-
-  @Prop({ required: true, unique: true, trim: true, lowercase: true })
-  username!: string;
-
-  @Prop({ required: true, unique: true, trim: true, lowercase: true })
-  email!: string;
-
-  @Prop({ required: true, trim: true })
-  mobile!: string;
-
-  @Prop({ required: true })
-  password!: string;
-
-  @Prop({ default: 'user' })
-  role!: string;
-}
-
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    mobile: { type: String, required: true },
+    password: { type: String, required: true },
+    role: { type: String, enum: ['user', 'manager', 'admin'], default: 'user' },
+    status: { type: Number, default: 1 }, // 1 = active
+    sessions: { type: [SessionSchema], default: [] }, // 👈 for Step 8.3
+  },
+  { timestamps: true },
+);
