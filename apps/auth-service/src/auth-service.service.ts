@@ -13,18 +13,17 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 
-
 @Injectable()
 export class AuthServiceService {
   private readonly logger = new Logger(AuthServiceService.name);
 
-   constructor(
+  constructor(
     private readonly mailer: EmailLibService,
     private readonly redis: RedisLibService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
   ) {}
-// ───────────────────────────────
+  // ───────────────────────────────
   // LOGIN → Validate credentials & send OTP
   // ───────────────────────────────
   async login(req: any, dto: LoginDto) {
@@ -338,7 +337,9 @@ export class AuthServiceService {
 
     const existing = await UserModel.findOne({
       $or: [{ email: dto.email }, { username: dto.username }],
-    }).lean().exec();
+    })
+      .lean()
+      .exec();
 
     if (existing) {
       throw new BadRequestException('User already exists');
@@ -368,7 +369,8 @@ export class AuthServiceService {
     }
 
     return {
-      message: 'Your account has been created successfully. You can now log in to your workspace.',
+      message:
+        'Your account has been created successfully. You can now log in to your workspace.',
       data: {
         id: user._id.toString(),
         name: user.name,
